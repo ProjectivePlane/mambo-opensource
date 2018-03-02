@@ -1,11 +1,11 @@
+LOCAL_PATH := $(call my-dir)
+
 ifeq ("$(TARGET_OS)","linux")
 ifneq (,$(filter $(TARGET_CPU),p6 p6i))
 
 ifndef BUILD_LINUX
 $(error update alchemy to version 1.0.5 or more)
 endif
-
-LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
@@ -19,6 +19,7 @@ LINUX_EXPORTED_HEADERS := \
 	$(LOCAL_PATH)/drivers/parrot/char/dmamem_ioctl.h \
 	$(LOCAL_PATH)/drivers/parrot/char/pwm/pwm_ioctl.h \
 	$(LOCAL_PATH)/drivers/parrot/ultra_sound/ultra_snd.h \
+	$(LOCAL_PATH)/drivers/parrot/jpsumo_adc/jpsumo_adc.h \
 	$(LOCAL_PATH)/drivers/parrot/pressure/lps22hb.h \
 	$(LOCAL_PATH)/drivers/parrot/char/gpio2_ioctl.h \
 	$(LOCAL_PATH)/arch/arm/plat-parrot/include/mach/delos_hwrev.h \
@@ -39,4 +40,17 @@ include $(BUILD_LINUX)
 
 
 endif
+endif
+
+# when building for native target,
+# some headers from linux are required by other modules
+ifeq ("$(TARGET_OS_FLAVOUR:-chroot=)","native")
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := linux-headers-p6
+LOCAL_INSTALL_HEADERS := $(LOCAL_PATH)/arch/arm/plat-parrot/include/mach/delos_hwrev.h:usr/include/linux/
+
+include $(BUILD_PREBUILT)
+
 endif
